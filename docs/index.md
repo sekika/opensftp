@@ -5,13 +5,21 @@ lang: en
 permalink: /
 ---
 
-OpenSFTP is a macOS app for browsing, transferring, and managing files on servers using your existing OpenSSH configuration. Browse remote folders in a Finder-style list or icon view, and drag files and folders between OpenSFTP and Finder.
+OpenSFTP is a macOS app for browsing, transferring, and managing files on servers using your existing OpenSSH configuration. Use Finder to manage local files, and drag files and folders between OpenSFTP and Finder to transfer them.
+
+Key features:
+
+- Connect using macOS's standard SSH configuration and public-key authentication, without managing separate connection settings in the app.
+- Browse remote files with familiar Finder-style controls, and drag and drop to upload and download.
+- Preview supported files within the app.
+- Copy files between servers.
+- Use SFTP for transfers, with rsync also available for folder transfers.
+- Manage multiple transfers in a queue and follow their progress and execution logs.
+- Inspect the open-source code to verify that it contains no functionality that sends sensitive information to external services.
+
+Build the app from source on your Mac. This documentation covers installation, connection setup, basic operations, and troubleshooting.
 
 ![OpenSFTP in icon view with a PDF preview]({{ '/img/screenshot.png' | relative_url }})
-
-- Connect with your existing SSH host aliases and public-key authentication.
-- Preview supported remote files and copy items between connected servers.
-- Transfer folders with SFTP or rsync and follow progress and logs in the queue.
 
 - [Installation and connection]({{ '/installation/' | relative_url }})
 - [Browsing and file management]({{ '/usage/' | relative_url }})
@@ -22,4 +30,8 @@ OpenSFTP is a macOS app for browsing, transferring, and managing files on server
 
 ## Development
 
-[Katsutoshi Seki](https://github.com/sekika) develops OpenSFTP and releases it under the MIT license. To customize the app with an AI coding agent, use the repository as the agent's working directory. Report bugs and suggest changes through [GitHub Issues](https://github.com/sekika/opensftp/issues). The project does not accept pull requests.
+[Katsutoshi Seki](https://github.com/sekika) develops OpenSFTP and releases it under the MIT license.
+
+To customize the app to your preferences with an AI coding agent, use this repository as the agent's working directory.
+
+The project does not accept pull requests, but bug reports and suggestions for changes are welcome through [GitHub Issues](https://github.com/sekika/opensftp/issues).
