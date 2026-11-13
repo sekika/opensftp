@@ -51,6 +51,8 @@ open "$HOME/Applications/OpenSFTP.app"
 
 OpenSFTP にバージョン番号はありません。[GitHub](https://github.com/sekika/opensftp) の最新のソースコードが常に最新版です。
 
+GitHubのリポジトリ全体の履歴には、ドキュメントの修正も含まれます。プログラムの更新を確認する際は、[Sourcesディレクトリの変更履歴](https://github.com/sekika/opensftp/commits/main/Sources)を確認してください。
+
 Git で取得したソースからビルドした場合は、「OpenSFTP → OpenSFTP について」でコミット ID と日時を確認できます。ビルド元に Git の履歴がない場合は、「コミット情報はありません」と表示されます。
 
 アプリを終了し、ソースコードを更新してから、同じディレクトリで再度 `make` を実行します。既存の `~/Applications/OpenSFTP.app` が更新されます。保存した表示設定や接続先の入力値は引き継がれます。

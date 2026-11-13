@@ -51,6 +51,8 @@ After building the app, you can delete the cloned repository folder if you no lo
 
 OpenSFTP has no version numbers. The latest source code on [GitHub](https://github.com/sekika/opensftp) is always the current version.
 
+The repository's full history on GitHub also includes documentation changes. To check for program updates, see the [commit history for the Sources directory](https://github.com/sekika/opensftp/commits/main/Sources).
+
 Choose **OpenSFTP → About OpenSFTP** to see the commit ID and date for a build made from a Git checkout. If the source has no Git history, the dialog shows “Commit information is unavailable.”
 
 Quit OpenSFTP, update the source, and run `make` again in the same directory. This updates the existing `~/Applications/OpenSFTP.app`. Saved display settings and the connection field's value carry over.
