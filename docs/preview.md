@@ -7,28 +7,69 @@ permalink: /preview/
 
 ## Preview a file
 
-Select one regular file or a symbolic link to one, then press Space or choose **Preview** from the context menu. Selecting another file updates the open preview. Use Escape or **Close** to dismiss it. OpenSFTP remembers the preview window's position and size.
+Preview requires permission to execute commands over SSH in addition to an SFTP connection. It is unavailable on SFTP-only servers. In that case, choose **Download and Open** under **Settings → Interaction** to view the contents in a Mac app.
 
-Preview needs permission to run commands over SSH on the server. For SFTP-only accounts, use [Download and Open]({{ '/usage/' | relative_url }}#open-files).
+### Basic controls
 
-## Supported formats
+Select one regular file or one symbolic link to a regular file, then press Space or choose **Preview** from the context menu to open a read-only preview window. Double-click, Return, and **Open** follow the action configured under **Settings → Interaction**.
 
-The server's `file` command detects format and encoding. Additional server commands depend on the file type.
+- Selecting another file in the browser updates the open preview.
+- Drag the window to move it, and use the handle at the bottom right to resize it. Its position and size are saved and restored next time.
+- Use **Close** or Escape to close it.
+- A link to a regular file displays the target file. Preview becomes available once the target has been checked.
+- Folders, links to folders, broken links, special files, and multiple selections cannot be previewed.
 
-| Type | What you can view |
+### Read text in Terminal
+
+To read and search a text file, select one regular file in the browser and choose **Open in Terminal (less)** from the context menu. This opens a new window in the Mac's Terminal, connects to the currently displayed host over SSH, and displays the selected file with `less`. Commands explicitly run through `/bin/sh` on both the Mac and server, even if Terminal's default shell is fish or zsh. Space-key preview and the double-click/Return action settings remain available as usual. There is no separate setting for this action.
+
+- Use arrow keys or Page Up / Page Down to scroll, `/` to search, and `q` to quit. When `q` exits less and its SSH command successfully, the viewing Terminal tab closes automatically. If it was the last tab, the window closes too. A connection or execution error leaves the tab open so you can read the error.
+- The server must allow SSH command execution and provide `file` and `less`. The action checks the text format on the server and does not pass binary files such as images, folders, or links to less. It is unavailable on SFTP-only servers.
+- The connection uses your normal SSH configuration and interactive authentication, with strict host-key verification. Authentication, connection, file-format, and less startup errors appear in Terminal.
+- Remote file contents are not saved to the Mac or added to the transfer queue. Only a short launch command is passed to Terminal; the SSH command runs from a temporary script on the Mac. This script is created in a directory accessible only to your user and deleted when execution starts. The in-app preview's data, line-count, and time limits do not apply. Quit or interrupt the command in Terminal. The Terminal session continues even after you close OpenSFTP.
+
+On first use, macOS may ask for permission for OpenSFTP to control Terminal. If you declined, allow it under **System Settings → Privacy & Security → Automation**. Use the app built with `make` for this action.
+
+### Supported formats
+
+The required commands run on the server. PDFs offer a choice between extracted text and an image of the first page. Audio and video previews show information such as the media format.
+
+First, `file` detects the file type (MIME type) and character encoding. The app then chooses the preview method below.
+
+| Type | Display and required server commands |
 |---|---|
-| Text, logs, and source | Pages of text with optional line numbers and basic syntax highlighting. Uses `head`, `tail`, and `awk`. |
-| Images | A scaled still image. Uses `stat` and `head`, then validates dimensions on the Mac. |
-| ZIP, tar, and compressed tar | An archive listing using `unzip` or `tar`. For plain gzip, the app can also try reading the start of the decompressed text. |
-| PDF | Text from the first three pages using `pdftotext`, or the first page as an image using `pdftoppm`. |
-| Word (.docx) | Extracted text and document properties using `unzip`. |
-| Audio and video | Metadata using `ffprobe`, plus a video frame from one second in when available using `ffmpeg`. |
-| Other binary data | The first 256 bytes as hexadecimal and ASCII. |
+| Text, logs, and source | Fetches pages with `head` / `tail`. Shows line numbers, basic syntax highlighting, and First, Previous, Next, and Last controls. The checkbox beside Last toggles line numbers, which are shown by default. Uses `awk` to count lines for Last. |
+| Images | Checks file size with `stat`, then uses `head` to fetch header information and data within the limit. Validates dimensions on the Mac and shows a scaled still image. |
+| ZIP, tar, and compressed tar | Shows the first page of an archive listing from `unzip -l` or `tar -tvf`. For plain gzip, also tries to show the beginning of decompressed text with `gzip -cd`. Does not extract files to disk. |
+| PDF | The Text tab extracts the first three pages with `pdftotext`. The First Page tab displays an image of the first page generated by `pdftoppm`. The last selected tab is restored on later previews. |
+| Word (.docx) | Uses `unzip` to fetch the body XML and document properties, then displays the first page of body text. Formatting, table layouts, and images are not reproduced. |
+| Audio and video | Shows format, duration, codec, and other information from `ffprobe`. For video, also checks frame dimensions and uses `ffmpeg` to show a scaled still frame from one second into the video. Does not play the media. |
+| Other binary data | Shows the first 256 bytes with offsets, hexadecimal values, and ASCII. Text containing NUL also switches to this display. |
 
-For PDFs, OpenSFTP fetches the selected tab on demand and remembers which tab you used last. The first-page image is generated on the server with a maximum long edge of 2,048 pixels. Images are limited to 50 million pixels and 16,384 pixels per side before scaling. See [Settings]({{ '/configuration/' | relative_url }}#resource-limits) for transfer and processing limits.
+Only the selected PDF tab is fetched. The first time you select First Page, the server generates a PNG with a maximum long edge of 2,048 pixels and sends it over SSH standard output. Fetched tabs stay in memory only while the same PDF is open and are discarded when the selection changes or the preview closes. Image generation follows the maximum image/video data and command time limits under **Limits → Preview**. Errors, such as a missing `pdftoppm`, appear in that tab; you can switch to the text tab. If the image tab was remembered, the next preview fetches the image without extracting text first.
 
-## Read text in Terminal
+Format detection does not depend on the extension. Supported character encodings include UTF-8/ASCII, ISO-8859-1, and Shift JIS. If decoding fails, the preview explains why. Archive sizes, dates, and names are parsed from common `tar` / `unzip` output formats; lines that cannot be parsed are still shown as their original text.
 
-Select one regular file and choose **Open in Terminal (less)**. The server needs SSH command execution, `file`, and `less`. The action checks the file type before opening it. It uses your SSH settings, allows interactive authentication in Terminal, and verifies the host key.
+### Image display and safeguards
 
-Use the arrow or page keys to scroll, `/` to search, and `q` to quit. The Terminal tab closes after successful exit and stays open after an error. This action streams the text in Terminal, independently of the app's preview limits and queue. If macOS requests automation permission, allow OpenSFTP to control Terminal under **System Settings → Privacy & Security → Automation**.
+Before displaying an image, the app validates its dimensions and generates a still thumbnail. The following safeguards are fixed rather than additional settings.
+
+| Item | Fixed behavior |
+|---|---|
+| Maximum original image pixel count | 50 million pixels. |
+| Maximum original image dimensions | 16,384 pixels for both width and height. |
+| Display thumbnail | Preserves the aspect ratio and scales the long edge down to at most 2,048 pixels. Small images are not enlarged. |
+| Animated or multipage images | Displays only the first frame or page as a still PNG. |
+| Parsing failure or exceeded limit | Stops display and explains why. Does not display the original directly or automatically open it in an external app. |
+
+Before receiving image data, the app checks file size on the server with `stat`. If it exceeds the data limit, the image transfer does not start. It then fetches up to the first 64 KiB and, for formats whose dimensions can be read there, checks them before receiving the entire image. For formats whose dimensions cannot be determined from the header alone, the app receives the whole file within the data limit and validates it before decoding. It rechecks received data size and dimensions afterward in case the file changed after the initial checks.
+
+Dimension parsing and scaling use the Mac's ImageIO, with scaling performed in the background. There is no need to install an image conversion tool such as ImageMagick on the server. A 2,048 × 2,048 display image uses about 16 MiB for 8-bit RGBA pixel data, with additional memory needed by the decoder. Original-image pixel count and dimension limits also apply.
+
+Representative video frames use the same dimension and thumbnail limits. The app checks the first video stream's dimensions with `ffprobe`, then scales the frame on the server with `ffmpeg` before receiving it. If the representative frame cannot be displayed, any media information that was fetched is still shown.
+
+### Settings and limits
+
+Under **Settings → Limits → Preview**, you can change text lines per page (50 by default), the maximum amount of text, archive listings, extracted XML, and media information (1 MiB by default), maximum image/video data (5 MiB by default), and time per command (30 seconds by default). Settings are shared across windows, saved, and applied starting with the next fetch. HexDump shows the first 256 bytes. Text limit checks include the extra line needed to determine whether another page exists. If the limit is exceeded, even partial contents are withheld and the preview asks you to download the file to inspect it. An oversized single line or Word body XML stops the preview.
+
+If the server does not allow SSH commands, a required tool is missing, permissions are insufficient, or a size limit is exceeded, the preview explains the reason. Fetched contents arrive through SSH command standard output and stay in memory; no temporary content files are created on the Mac. Commands run through the remote login shell using `/bin/sh`, and each is stopped after the configured command time limit (30 seconds by default). Counting lines for Last or processing compressed files can take time on the server.

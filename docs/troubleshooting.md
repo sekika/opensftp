@@ -5,35 +5,81 @@ lang: en
 permalink: /troubleshooting/
 ---
 
-## Xcode or XCTest errors
+## Troubleshooting
 
-Open the full Xcode app once to complete setup. Check the active developer directory with `xcode-select -p`. To choose Xcode for this build only, run:
+### Xcode or XCTest errors when running make
+
+Open the full Xcode app to finish setup, then check the active developer tools with:
+
+```sh
+xcode-select --print-path
+```
+
+If this shows `/Library/Developer/CommandLineTools` and you get an error that `XCTest` cannot be found, switch to the full Xcode app. Adjust the path if you installed Xcode elsewhere.
+
+```sh
+unset DEVELOPER_DIR
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+make
+```
+
+To select Xcode only for this Terminal command without changing the system-wide setting, run:
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer make
 ```
 
-If stale build artifacts cause errors after an Xcode update, run `swift package clean` and then `make` from the repository directory.
+If old build artifacts cause problems after an Xcode update, run `swift package clean` at the repository root, then run `make` again.
 
-## Connection failures
+### Terminal connects, but the app fails
 
-Test the same host with `sftp -oBatchMode=yes -oStrictHostKeyChecking=yes example`. If a standard Terminal connection works but this command fails, check whether authentication requires a prompt and inspect loaded keys with `ssh-add -l`. Finder and Terminal can have different SSH agent environments. To test the Terminal environment, quit OpenSFTP and start the installed executable there:
+Check whether a normal `sftp example` connection requires you to enter a passphrase or verification code manually. Also try the noninteractive connection command in [Set up SSH]({{ '/installation/' | relative_url }}#set-up-ssh).
+
+An app launched from Finder can have a different ssh-agent environment from Terminal. Check which keys are loaded with:
+
+```sh
+ssh-add -l
+```
+
+To investigate the difference, quit the app and launch its executable directly from the Terminal session that can connect:
 
 ```sh
 "$HOME/Applications/OpenSFTP.app/Contents/MacOS/OpenSFTP"
 ```
 
-For an unknown host key, verify it in Terminal before accepting it. For a mismatch, confirm the change with the server administrator. If an alias is missing from the menu, reload the host list or enter it manually. For a timeout, check the hostname, port, jump host, and network.
+### Unknown or mismatched host key
 
-## rsync failures
+Run `sftp example` in Terminal on the same Mac and verify the server's key. If it does not match, ask the administrator whether the server changed or you are connecting to the wrong destination. Do not delete entries from `known_hosts` without checking the cause.
 
-Check that the Mac and server both have rsync. Use `/usr/bin/rsync --version` locally and `ssh example rsync --version` on the server. If the account permits SFTP only, choose an SFTP transfer method. The queue log shows the command output and exit code for a failed job.
+### Missing host suggestions or connection timeouts
 
-## Download or copy problems
+Reload suggestions after changing the configuration. Enter names from `Include` files manually. Check the hostname, port, jump host, and network settings too. The app's connection wait timeout is 15 seconds.
 
-- If Finder's drop destination cannot be determined, use **Download to Finder…** and choose a folder.
-- If a same-name item has an incompatible type, use a numbered name for a regular file or cancel. To update a same-name folder, choose a folder transfer method.
-- If a copied symbolic link is broken, verify that its target text resolves from the destination.
-- If a transfer stops, inspect the queue and logs. Completed transfers and deletions can remain in place. An abrupt stop can leave items named `.opensftp-….partial` on the Mac or server. Check that no job is using them before removing them.
+### rsync failures
 
-OpenSFTP handles regular files, folders, and symbolic links. Concurrent changes to source or destination may go undetected. There is no transfer-wide rollback.
+Check that rsync is available on both the Mac and the server:
+
+```sh
+/usr/bin/rsync --version
+ssh example rsync --version
+```
+
+If remote command execution is prohibited, as with an SFTP-only account, choose an SFTP transfer method. The app does not automatically switch methods after a failure. Inspect the command, output, and exit code in the app's log for details.
+
+### Same-name errors when downloading or opening a file
+
+For a regular file with a name conflict, choose to overwrite, save under a numbered name, or cancel. If a folder or link already has the same name, choose a different name or cancel. To update the contents of an existing folder, choose a folder transfer method.
+
+### Finder's drop destination cannot be determined
+
+Use the download button or **Download to Finder…** from the context menu to choose a destination. If you need to repeat the Finder action, drag the items again.
+
+### Copying a link fails, or the copy is broken
+
+The app does not rewrite the link's target text. Check whether the same target can be reached from the destination. When overwriting an existing link through SFTP, a server that does not support link replacement causes the operation to fail while preserving the existing link.
+
+### A transfer failed or was canceled, or temporary items remain
+
+Check the queue result and logs. Transfers and deletions completed before failure or cancellation remain in place. A failed upload can also leave a partially transferred file at the destination.
+
+Downloads, regular-file and SFTP folder uploads, and server-to-server copies use temporary items whose names begin with `.opensftp-` and end with `.partial`. Normal failures clean them up, but a forced quit, OS shutdown, or connection loss can leave them on the Mac or server. If a change to a parent path is detected, temporary items that cannot be safely removed are also left in place and recorded in the log. Check that no operation is running before removing unneeded temporary items.
