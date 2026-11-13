@@ -1,0 +1,31 @@
+en:
+  - title: Home
+    url: /
+  - title: Install
+    url: /installation/
+  - title: Browse
+    url: /usage/
+  - title: Transfers
+    url: /transfers/
+  - title: Preview
+    url: /preview/
+  - title: Settings
+    url: /configuration/
+  - title: Help
+    url: /troubleshooting/
+
+ja:
+  - title: ホーム
+    url: /ja/
+  - title: 導入
+    url: /ja/installation/
+  - title: 操作
+    url: /ja/usage/
+  - title: 転送
+    url: /ja/transfers/
+  - title: プレビュー
+    url: /ja/preview/
+  - title: 設定
+    url: /ja/configuration/
+  - title: ヘルプ
+    url: /ja/troubleshooting/

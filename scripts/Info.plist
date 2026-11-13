@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+    <key>CFBundleName</key><string>OpenSFTP</string>
+    <key>CFBundleDisplayName</key><string>OpenSFTP</string>
+    <key>CFBundleDevelopmentRegion</key><string>en</string>
+    <key>CFBundleLocalizations</key><array><string>en</string><string>ja</string></array>
+    <key>CFBundleIdentifier</key><string>local.opensftp.desktop</string>
+    <key>CFBundleExecutable</key><string>OpenSFTP</string>
+    <key>CFBundleIconFile</key><string>AppIcon.icns</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleVersion</key><string>1</string>
+    <key>LSMinimumSystemVersion</key><string>13.0</string>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>NSPrincipalClass</key><string>NSApplication</string>
+    <key>NSAppleEventsUsageDescription</key><string>選択したリモートのテキストファイルをSSHとlessで表示するためにTerminalを操作します。</string>
+</dict></plist>

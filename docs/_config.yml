@@ -1,0 +1,37 @@
+title: OpenSFTP
+description: A macOS app for browsing, transferring, and managing files over SFTP
+author:
+  name: Katsutoshi Seki
+remote_theme: jekyll/minima
+baseurl: "/opensftp"
+url: "https://sekika.github.io"
+markdown: kramdown
+permalink: pretty
+google_analytics: G-1JRPK4WZ2B
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
+minima:
+  social_links:
+    - title: OpenSFTP source repository at GitHub
+      icon: github
+      url: "https://github.com/sekika/opensftp"
+    - title: seki at PyPI
+      icon: python
+      url: "https://pypi.org/user/seki/"
+    - title: sekika at Rust crate
+      icon: rust
+      url: "https://crates.io/users/sekika"
+    - title: seki at X
+      icon: x-twitter
+      url: "https://x.com/seki"
+    - title: Google scholar
+      icon: google-scholar
+      url: "https://scholar.google.com/citations?user=Gs_ABawAAAAJ"
+    - title: ORCID
+      icon: orcid
+      url: "https://orcid.org/0000-0002-5707-0283"
+    - title: Wikipedia User page
+      icon: wikipedia-w
+      url: "https://en.wikipedia.org/wiki/User:Katsutoshi_Seki"
+  hide_site_feed_link: true
