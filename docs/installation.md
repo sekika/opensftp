@@ -16,10 +16,11 @@ permalink: /installation/
 ## Build and install
 
 1. Install and open Xcode to accept its license and finish setup.
-2. Clone or download the [OpenSFTP repository](https://github.com/sekika/opensftp).
-3. In Terminal, change to the repository directory containing `Makefile` and run:
+2. Copy and run all three lines below together in Terminal to clone the source, enter the repository directory, and build and install the app:
 
 ```sh
+git clone https://github.com/sekika/opensftp.git
+cd opensftp
 make
 ```
 

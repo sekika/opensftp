@@ -21,11 +21,11 @@ SFTPでの接続・転送にはmacOS標準のSSHとSFTPを使います。Finder�
 ### アプリを作成する
 
 1. Xcodeをインストールし、一度起動してライセンスへの同意や追加コンポーネントのインストールを済ませます。
-2. [GitHubのリポジトリ](https://github.com/sekika/opensftp)からソースコードを取得します。
-3. ターミナルで、取得したリポジトリのトップ、つまり `Makefile` のあるディレクトリへ移動します。
-4. 次を実行します。
+2. ターミナルで次の3行をまとめてコピーして実行します。ソースコードの取得、取得したディレクトリへの移動、アプリの作成とインストールまでを続けて行います。
 
 ```sh
+git clone https://github.com/sekika/opensftp.git
+cd opensftp
 make
 ```
 
