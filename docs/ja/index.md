@@ -5,6 +5,8 @@ lang: ja
 permalink: /ja/
 ---
 
+{% include program-updated.html %}
+
 OpenSFTPは、macOSのSSH設定を利用して、サーバー上のファイルを閲覧・転送・管理するアプリです。ローカルのファイル操作にはFinderを使い、Finderとアプリの間でドラッグ＆ドロップしてファイルを転送できます。
 
 主な特徴：

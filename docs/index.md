@@ -5,6 +5,8 @@ lang: en
 permalink: /
 ---
 
+{% include program-updated.html %}
+
 OpenSFTP is a macOS app for browsing, transferring, and managing files on servers using your existing OpenSSH configuration. Use Finder to manage local files, and drag files and folders between OpenSFTP and Finder to transfer them.
 
 Key features:
