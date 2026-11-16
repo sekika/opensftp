@@ -85,6 +85,23 @@ final class AppModel: ObservableObject {
     @Published var selection = Set<String>() { didSet { updatePreviewSelection() } }
     let preview = FilePreviewModel()
     @Published private(set) var openingTerminal = false
+    @Published private(set) var openingVSCode = false
+    var showsVSCodeMenu: Bool { integrationPreferences.vsCodeConfigured }
+    var canOpenInVSCode: Bool {
+        showsVSCodeMenu && canPreview && !openingVSCode
+    }
+    func openSelectionInVSCode() {
+        guard canOpenInVSCode, let application = integrationPreferences.vsCodeApplication,
+              let item = selectedEntries.first else { return }
+        let host = host, remote = SFTPCommand.join(path, item.name)
+        openingVSCode = true
+        let openVSCode = self.openVSCode
+        Task { [weak self] in
+            defer { self?.openingVSCode = false }
+            do { try await openVSCode(application, host, remote) }
+            catch { self?.errorMessage = error.localizedDescription }
+        }
+    }
     var canPreview: Bool {
         guard connected, selectedEntries.count == 1, let item = selectedEntries.first else { return false }
         return item.isRegularFile || (item.kind == .symbolicLink && fileLinkTargets[item.name] != nil)
@@ -172,6 +189,8 @@ final class AppModel: ObservableObject {
     private var downloadsDirectory: URL { downloadsDirectoryOverride ?? AppPreferences.shared.downloadDirectory }
     private let openLocalFile: (URL) throws -> Void
     private let openTextInTerminal: (String, String) async throws -> Void
+    private let integrationPreferences: AppPreferences
+    private let openVSCode: (URL, String, String) async throws -> Void
 
     init(workspace: AppWorkspace? = nil,
          remoteFileSystem: (any RemoteFileSystem)? = nil,
@@ -184,6 +203,10 @@ final class AppModel: ObservableObject {
          language: AppLanguage? = nil,
          defaults: UserDefaults = .standard,
          downloadsDirectory: URL? = nil,
+         integrationPreferences: AppPreferences? = nil,
+         openVSCode: @escaping (URL, String, String) async throws -> Void = { application, host, path in
+             try await VSCodeService().open(application: application, host: host, path: path)
+         },
          openTextInTerminal: @escaping (String, String) async throws -> Void = { host, path in
              try await TerminalLessService().open(host: host, path: path)
          },
@@ -198,6 +221,8 @@ final class AppModel: ObservableObject {
         self.scp = scp
         self.chooseRemotePolicy = chooseRemotePolicy
         self.defaults = defaults
+        self.integrationPreferences = integrationPreferences ?? AppPreferences.shared
+        self.openVSCode = openVSCode
         self.hostInput = defaults.string(forKey: "hostInput") ?? ""
         self.showStatusBar = defaults.object(forKey: "showStatusBar") as? Bool ?? true
         self.showFolderStatusBar = defaults.object(forKey: "showFolderStatusBar") as? Bool ?? true

@@ -1,6 +1,7 @@
 import SwiftUI
 import AppKit
 import SFTPCore
+import UniformTypeIdentifiers
 
 public enum SettingsTab: Hashable, Sendable {
     case appearance
@@ -47,6 +48,8 @@ public struct SettingsView: View {
                             if panel.runModal() == .OK, let url = panel.url { preferences.downloadDirectory = url }
                         }
                     }
+                    Divider()
+                    VSCodeSettingsView(preferences: preferences)
                 }
             }
             .padding(20)
@@ -58,6 +61,47 @@ public struct SettingsView: View {
                 .tag(SettingsTab.limits)
         }
         .preferredColorScheme(preferences.appearance.colorTheme.colorScheme)
+    }
+}
+
+private struct VSCodeSettingsView: View {
+    @ObservedObject var preferences: AppPreferences
+    @ObservedObject private var workspace = AppWorkspace.shared
+    private func tr(_ text: String) -> String { AppStrings.translate(text, to: workspace.language) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle(tr("VS Codeと連携する"), isOn: $preferences.vsCodeEnabled)
+            HStack {
+                Text(preferences.vsCodeApplication?.path ?? tr("VS Codeのアプリを選択してください"))
+                    .lineLimit(1).truncationMode(.middle).textSelection(.enabled)
+                Button(tr("選択…")) { chooseApplication() }
+            }
+            .disabled(!preferences.vsCodeEnabled)
+            Text(tr("Visual Studio Codeの事前の設定が必要です。詳しくはドキュメント参照"))
+                .font(.caption).foregroundStyle(.secondary)
+            Link(tr("ドキュメントを開く"), destination: URL(string: workspace.language == .japanese
+                 ? "https://sekika.github.io/opensftp/ja/configuration/#vscode"
+                 : "https://sekika.github.io/opensftp/configuration/#vscode")!)
+        }
+    }
+
+    private func chooseApplication() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.application]
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.directoryURL = preferences.vsCodeApplication?.deletingLastPathComponent()
+            ?? URL(fileURLWithPath: "/Applications", isDirectory: true)
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        guard Bundle(url: url)?.bundleIdentifier == "com.microsoft.VSCode" else {
+            let alert = NSAlert()
+            alert.messageText = tr("Visual Studio Code.appを選択してください")
+            alert.runModal()
+            return
+        }
+        preferences.vsCodeApplication = url
     }
 }
 

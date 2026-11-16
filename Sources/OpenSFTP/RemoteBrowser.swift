@@ -303,6 +303,9 @@ final class BrowserCanvas: NSView, NSDraggingSource, NSMenuDelegate {
         }
         add("プレビュー", #selector(previewItem), model.canPreview)
         add("Terminalで開く（less）", #selector(openInTerminal), model.canOpenInTerminal)
+        if model.showsVSCodeMenu {
+            add("VS Codeで開く", #selector(openInVSCode), model.canOpenInVSCode)
+        }
         add("開く", #selector(openItem), model.selectedEntries.count == 1 && model.selectedEntries.first.map { $0.isDirectory || $0.isRegularFile || $0.kind == .symbolicLink } == true)
         add("Finderへダウンロード…", #selector(downloadItems), model.canDownload)
         if !model.selectedEntries.isEmpty, !model.canDownload { add("特殊ファイルは転送対象外", #selector(downloadItems), false) }
@@ -314,6 +317,7 @@ final class BrowserCanvas: NSView, NSDraggingSource, NSMenuDelegate {
     }
     @objc private func previewItem() { model.previewSelection() }
     @objc private func openInTerminal() { model.openSelectionInTerminal() }
+    @objc private func openInVSCode() { model.openSelectionInVSCode() }
     @objc private func openItem() { model.openSelection() }
     @objc private func downloadItems() { model.downloadSelection() }
     @objc private func renameItem() { model.rename() }

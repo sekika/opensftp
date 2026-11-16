@@ -29,6 +29,34 @@ permalink: /ja/configuration/
 
 本書のメニュー名は日本語表示に合わせています。画面が英語の場合は「Language → 日本語」で切り替えてください。ファイル名・パス・生ログは翻訳しません。
 
+### VS Codeとの連携 {#vscode}
+
+Visual Studio Codeの拡張機能「Remote - SSH」を利用して、サーバー上のファイルを直接開けます。
+
+1. Visual Studio CodeにMicrosoftの拡張機能[Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh)をインストールします。
+2. VS Codeのコマンドパレットで「Remote-SSH: Connect to Host…」を実行し、OpenSFTPで使用するSSHのHost名（例：`example`）または `user@host` で接続します。まずVS Codeからサーバー上のファイルを開けることを確認してください。Remote-SSHにはVS Code Serverを実行できる接続先が必要で、SFTP専用アカウントでは利用できません。詳しくは[Remote-SSHの公式ドキュメント](https://code.visualstudio.com/docs/remote/ssh)を参照してください。
+3. 接続できない、または接続中のまま進まない場合は、Mac側の `~/Library/Application Support/Code/User/settings.json` を開き、次の設定を追加します。VS Codeの「Preferences: Open User Settings (JSON)」からも開けます。既存の設定がある場合は、そのオブジェクトに項目を追加して、他の設定を残してください。
+
+   ```json
+   {
+     "remote.SSH.useLocalServer": false,
+     "remote.SSH.showLoginTerminal": true,
+     "remote.SSH.connectTimeout": 60
+   }
+   ```
+
+   VS Codeから再接続し、認証の入力を求められた場合は入力します。最初の2項目はMicrosoftの[接続トラブルの対処方法](https://code.visualstudio.com/docs/remote/troubleshooting#troubleshooting-hanging-or-failing-connections)でも案内されています。最後の項目は接続の待ち時間を60秒にします。
+4. OpenSFTPの「設定 → 操作」で「VS Codeと連携する」を有効にし、`Visual Studio Code.app`（通常は `/Applications` 内）を選びます。有効・無効とアプリの場所は保存されます。
+5. サーバー上のファイルを1件選び、右クリックの「VS Codeで開く」を実行します。連携を有効にし、アプリを選択した場合にメニューが表示されます。フォルダ・特殊ファイル・複数選択では実行できません。シンボリックリンクは、リンク先がファイルと確認できている場合に利用できます。
+
+例えば、ホスト `example` の `/Users/seki/file.txt` を開く場合は、次のコマンドに相当します。
+
+```sh
+open -a "/Applications/Visual Studio Code.app" "vscode://vscode-remote/ssh-remote+example/Users/seki/file.txt:1:1"
+```
+
+設定したアプリ、現在接続しているホスト、選択したリモートパスをmacOSの `open` に直接渡します。空白や日本語を含むパスはURI用にエンコードします。VS Codeで1行目・1列目を開き、SSH接続とリモート編集はVS Codeが行います。VS Codeで保存するとサーバー上のファイルを更新します。起動後の接続エラーや認証の入力はVS Code側で確認してください。
+
 ### 処理の上限
 
 「設定 → 上限」に、一覧・フォルダ処理・ログ・差分・プレビューの制限をまとめています。各項目に単位と初期値を表示し、「初期値に戻す」でプレビューのページ行数・バイナリ取得量も含めて戻せます。従来のプレビュー設定値は引き継ぎます。接続タイムアウトとKeepAliveは「設定 → rsync」にあります。
@@ -60,6 +88,7 @@ permalink: /ja/configuration/
 | キュー・ログ・両ステータスバーの表示状態 | 前回の設定を復元します。 |
 | ウィンドウのサイズ | 最後に閉じたウィンドウのサイズ（アプリ終了時は前面のブラウザのサイズ）を復元します。初回は1050×760ポイント、最小サイズの初期値は600×550ポイントです。 |
 | ダブルクリック時の動作、ダウンロード先 | 前回の設定を復元します。 |
+| VS Code連携の有効・無効、アプリの場所 | 前回の設定を復元します。 |
 | 「設定 → 上限」の設定（一覧・フォルダ処理・ログ・差分・プレビュー）、プレビューウィンドウの位置・大きさ | 前回の設定を復元します。 |
 | 「設定 → 外観」の設定（配色・最小ウィンドウサイズ・アイコン表示） | 前回の設定を復元します。 |
 | 「設定 → rsync」の設定（rsyncの転送オプション・SSH接続の設定） | 前回の設定を復元します。 |

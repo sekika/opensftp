@@ -29,6 +29,34 @@ The interface supports Japanese and English. At launch, the app uses Japanese if
 
 This English documentation uses the English menu names. If the interface is in Japanese, choose **言語 → English**. Filenames, paths, and raw logs are not translated.
 
+### VS Code integration {#vscode}
+
+You can open a remote file directly in Visual Studio Code using its **Remote - SSH** extension.
+
+1. Install Microsoft's [Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) in Visual Studio Code.
+2. In VS Code, run **Remote-SSH: Connect to Host…** from the Command Palette and connect using the same SSH host alias (for example, `example`) or `user@host` that you use in OpenSFTP. Verify that VS Code can open a remote file first. Remote-SSH requires a host that can run VS Code Server; an SFTP-only account is insufficient. See the [Remote-SSH documentation](https://code.visualstudio.com/docs/remote/ssh).
+3. If the connection fails or hangs, open the local Mac's `~/Library/Application Support/Code/User/settings.json` (or run **Preferences: Open User Settings (JSON)**) and add the following settings. Merge them into the existing object, preserving your other settings:
+
+   ```json
+   {
+     "remote.SSH.useLocalServer": false,
+     "remote.SSH.showLoginTerminal": true,
+     "remote.SSH.connectTimeout": 60
+   }
+   ```
+
+   Retry from VS Code and complete any authentication prompts. The first two options are described in Microsoft's [connection troubleshooting guide](https://code.visualstudio.com/docs/remote/troubleshooting#troubleshooting-hanging-or-failing-connections); the last allows 60 seconds to connect.
+4. In OpenSFTP, open **Settings → Interaction**, enable **Integrate with VS Code**, and choose `Visual Studio Code.app` (usually in `/Applications`). The enablement and application path are saved.
+5. Select one remote file, right-click, and choose **Open in VS Code**. The menu appears only when integration is enabled and the application has been selected. Folders, special files, and multiple selections cannot be opened with this command. Symbolic links are available when OpenSFTP has identified their target as a file.
+
+For example, opening `/Users/seki/file.txt` on host `example` is equivalent to:
+
+```sh
+open -a "/Applications/Visual Studio Code.app" "vscode://vscode-remote/ssh-remote+example/Users/seki/file.txt:1:1"
+```
+
+OpenSFTP passes the configured application, current connected host, and selected remote path directly to macOS `open`. Paths containing spaces or Japanese characters are URI-encoded. VS Code opens the file at line 1, column 1, and handles the SSH connection and remote edits. Saving in VS Code updates the remote file. After launch, connection errors and authentication prompts appear in VS Code.
+
 ### Resource limits {#resource-limits}
 
 **Settings → Limits** groups limits for listings, folder operations, logs, diffs, and previews. Each setting shows its unit and default value. **Reset to Defaults** resets all of them, including preview lines per page and binary data limits. Previously saved preview settings are carried over. Connection timeout and keepalive settings are under **Settings → rsync**.
@@ -60,6 +88,7 @@ The retained log limit and diff data limit are separate. Even if diff output is 
 | Visibility of the queue, logs, and both status bars | Restores the previous settings. |
 | Window size | Restores the size of the last window closed, or the frontmost browser when quitting the app. The initial size is 1050 × 760 points, and the default minimum is 600 × 550 points. |
 | Double-click action and download destination | Restores the previous settings. |
+| VS Code integration enablement and application path | Restores the previous settings. |
 | Settings → Limits (listings, folder operations, logs, diffs, and previews), and preview window position and size | Restores the previous settings. |
 | Settings → Appearance (color scheme, minimum window size, and icon view) | Restores the previous settings. |
 | Settings → rsync (rsync transfer options and SSH connection settings) | Restores the previous settings. |

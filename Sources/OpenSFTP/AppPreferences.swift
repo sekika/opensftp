@@ -117,6 +117,13 @@ public final class AppPreferences: ObservableObject {
     @Published public var downloadDirectory: URL {
         didSet { defaults.set(downloadDirectory.path, forKey: "openDownloadDirectory") }
     }
+    @Published public var vsCodeEnabled: Bool {
+        didSet { defaults.set(vsCodeEnabled, forKey: "vsCodeEnabled") }
+    }
+    @Published public var vsCodeApplication: URL? {
+        didSet { defaults.set(vsCodeApplication?.path, forKey: "vsCodeApplication") }
+    }
+    public var vsCodeConfigured: Bool { vsCodeEnabled && vsCodeApplication != nil }
 
     public enum DoubleClickAction: String, CaseIterable, Sendable {
         case preview, download
@@ -124,6 +131,10 @@ public final class AppPreferences: ObservableObject {
 
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        self.vsCodeEnabled = defaults.bool(forKey: "vsCodeEnabled")
+        self.vsCodeApplication = defaults.string(forKey: "vsCodeApplication").flatMap {
+            $0.isEmpty ? nil : URL(fileURLWithPath: $0)
+        }
         self.preview = PreviewPreferences(defaults: defaults)
         self.limits = ResourceLimits(defaults: defaults)
         self.doubleClickAction = DoubleClickAction(rawValue: defaults.string(forKey: "doubleClickAction") ?? "preview") ?? .preview

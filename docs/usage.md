@@ -55,6 +55,8 @@ Links to folders display a folder icon with a link arrow. Links to files display
 
 When opening a symbolic link, the app checks its target type. A folder target opens that folder; a file target opens the target file according to the **Preview** or **Download and Open** setting. A broken link or an unknown target type displays an explanation and leaves the existing listing in place.
 
+You can also use **Open in VS Code** in the context menu after completing the [VS Code integration setup]({{ '/configuration/' | relative_url }}#vscode).
+
 ## Manage remote files
 
 | Action | Steps |
