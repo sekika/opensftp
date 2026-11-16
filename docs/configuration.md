@@ -33,6 +33,8 @@ This English documentation uses the English menu names. If the interface is in J
 
 You can open a remote file directly in Visual Studio Code using its **Remote - SSH** extension.
 
+First complete [Set up SSH]({{ '/installation/' | relative_url }}#set-up-ssh) and verify that OpenSFTP can connect without prompting for authentication information. Configure VS Code to use the same SSH configuration, key, and ssh-agent or Keychain integration so that it can also connect without authentication prompts.
+
 1. Install Microsoft's [Remote - SSH extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) in Visual Studio Code.
 2. In VS Code, run **Remote-SSH: Connect to Host…** from the Command Palette and connect using the same SSH host alias (for example, `example`) or `user@host` that you use in OpenSFTP. Verify that VS Code can open a remote file first. Remote-SSH requires a host that can run VS Code Server; an SFTP-only account is insufficient. See the [Remote-SSH documentation](https://code.visualstudio.com/docs/remote/ssh).
 3. If the connection fails or hangs, open the local Mac's `~/Library/Application Support/Code/User/settings.json` (or run **Preferences: Open User Settings (JSON)**) and add the following settings. Merge them into the existing object, preserving your other settings:
@@ -45,7 +47,7 @@ You can open a remote file directly in Visual Studio Code using its **Remote - S
    }
    ```
 
-   Retry from VS Code and complete any authentication prompts. The first two options are described in Microsoft's [connection troubleshooting guide](https://code.visualstudio.com/docs/remote/troubleshooting#troubleshooting-hanging-or-failing-connections); the last allows 60 seconds to connect.
+   Retry from VS Code and check the connection status in the login terminal. If authentication prompts appear, check that VS Code uses the same SSH configuration and key as OpenSFTP and can access your ssh-agent or Keychain integration. Adjust the configuration so that VS Code can connect without authentication prompts. The first two options are described in Microsoft's [connection troubleshooting guide](https://code.visualstudio.com/docs/remote/troubleshooting#troubleshooting-hanging-or-failing-connections); the last allows 60 seconds to connect.
 4. In OpenSFTP, open **Settings → Interaction**, enable **Integrate with VS Code**, and choose `Visual Studio Code.app` (usually in `/Applications`). The enablement and application path are saved.
 5. Select one remote file, right-click, and choose **Open in VS Code**. The menu appears only when integration is enabled and the application has been selected. Folders, special files, and multiple selections cannot be opened with this command. Symbolic links are available when OpenSFTP has identified their target as a file.
 
@@ -55,7 +57,7 @@ For example, opening `/Users/seki/file.txt` on host `example` is equivalent to:
 open -a "/Applications/Visual Studio Code.app" "vscode://vscode-remote/ssh-remote+example/Users/seki/file.txt:1:1"
 ```
 
-OpenSFTP passes the configured application, current connected host, and selected remote path directly to macOS `open`. Paths containing spaces or Japanese characters are URI-encoded. VS Code opens the file at line 1, column 1, and handles the SSH connection and remote edits. Saving in VS Code updates the remote file. After launch, connection errors and authentication prompts appear in VS Code.
+OpenSFTP passes the configured application, current connected host, and selected remote path directly to macOS `open`. Paths containing spaces or Japanese characters are URI-encoded. VS Code opens the file at line 1, column 1, and handles the SSH connection and remote edits. Saving in VS Code updates the remote file. After launch, check connection errors in VS Code.
 
 ### Resource limits {#resource-limits}
 

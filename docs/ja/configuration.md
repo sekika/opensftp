@@ -33,6 +33,8 @@ permalink: /ja/configuration/
 
 Visual Studio Codeの拡張機能「Remote - SSH」を利用して、サーバー上のファイルを直接開けます。
 
+事前に[SSHの接続設定]({{ '/ja/installation/' | relative_url }}#sshの接続設定を用意する)を済ませ、OpenSFTPから認証情報の入力なしで接続できることを確認してください。VS Codeでも同じSSH設定・鍵・ssh-agentやKeychain連携を利用し、認証情報の入力なしで接続できるように設定します。
+
 1. Visual Studio CodeにMicrosoftの拡張機能[Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh)をインストールします。
 2. VS Codeのコマンドパレットで「Remote-SSH: Connect to Host…」を実行し、OpenSFTPで使用するSSHのHost名（例：`example`）または `user@host` で接続します。まずVS Codeからサーバー上のファイルを開けることを確認してください。Remote-SSHにはVS Code Serverを実行できる接続先が必要で、SFTP専用アカウントでは利用できません。詳しくは[Remote-SSHの公式ドキュメント](https://code.visualstudio.com/docs/remote/ssh)を参照してください。
 3. 接続できない、または接続中のまま進まない場合は、Mac側の `~/Library/Application Support/Code/User/settings.json` を開き、次の設定を追加します。VS Codeの「Preferences: Open User Settings (JSON)」からも開けます。既存の設定がある場合は、そのオブジェクトに項目を追加して、他の設定を残してください。
@@ -45,7 +47,7 @@ Visual Studio Codeの拡張機能「Remote - SSH」を利用して、サーバ�
    }
    ```
 
-   VS Codeから再接続し、認証の入力を求められた場合は入力します。最初の2項目はMicrosoftの[接続トラブルの対処方法](https://code.visualstudio.com/docs/remote/troubleshooting#troubleshooting-hanging-or-failing-connections)でも案内されています。最後の項目は接続の待ち時間を60秒にします。
+   VS Codeから再接続し、ログイン用ターミナルで接続状況を確認します。認証情報の入力を求められる場合は、OpenSFTPと同じSSH設定・鍵が使われているか、VS Codeからssh-agentやKeychain連携を利用できるかを確認し、入力なしで接続できるように設定を整えてください。最初の2項目はMicrosoftの[接続トラブルの対処方法](https://code.visualstudio.com/docs/remote/troubleshooting#troubleshooting-hanging-or-failing-connections)でも案内されています。最後の項目は接続の待ち時間を60秒にします。
 4. OpenSFTPの「設定 → 操作」で「VS Codeと連携する」を有効にし、`Visual Studio Code.app`（通常は `/Applications` 内）を選びます。有効・無効とアプリの場所は保存されます。
 5. サーバー上のファイルを1件選び、右クリックの「VS Codeで開く」を実行します。連携を有効にし、アプリを選択した場合にメニューが表示されます。フォルダ・特殊ファイル・複数選択では実行できません。シンボリックリンクは、リンク先がファイルと確認できている場合に利用できます。
 
@@ -55,7 +57,7 @@ Visual Studio Codeの拡張機能「Remote - SSH」を利用して、サーバ�
 open -a "/Applications/Visual Studio Code.app" "vscode://vscode-remote/ssh-remote+example/Users/seki/file.txt:1:1"
 ```
 
-設定したアプリ、現在接続しているホスト、選択したリモートパスをmacOSの `open` に直接渡します。空白や日本語を含むパスはURI用にエンコードします。VS Codeで1行目・1列目を開き、SSH接続とリモート編集はVS Codeが行います。VS Codeで保存するとサーバー上のファイルを更新します。起動後の接続エラーや認証の入力はVS Code側で確認してください。
+設定したアプリ、現在接続しているホスト、選択したリモートパスをmacOSの `open` に直接渡します。空白や日本語を含むパスはURI用にエンコードします。VS Codeで1行目・1列目を開き、SSH接続とリモート編集はVS Codeが行います。VS Codeで保存するとサーバー上のファイルを更新します。起動後の接続エラーはVS Code側で確認してください。
 
 ### 処理の上限
 
