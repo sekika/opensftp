@@ -14,6 +14,7 @@ Key features:
 - Connect using macOS's standard SSH configuration and public-key authentication, without managing separate connection settings in the app.
 - Browse remote files with familiar Finder-style controls, and drag and drop to upload and download.
 - Preview supported files within the app.
+- [Open and edit remote files directly in VS Code]({{ '/configuration/' | relative_url }}#vscode).
 - Copy files between servers.
 - Use SFTP for transfers, with rsync also available for folder transfers.
 - Manage multiple transfers in a queue and follow their progress and execution logs.
